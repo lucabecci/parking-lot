@@ -1,0 +1,1 @@
+configs of all svc
