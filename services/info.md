@@ -1,1 +1,1 @@
-> Monorepos for the services
+> monorepos
