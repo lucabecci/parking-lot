@@ -7,3 +7,9 @@ type Service interface {
 	Register(ctx context.Context, email, password, confirmPassword string) error
 	ValidateToken(ctx context.Context, token string) error
 }
+
+type service struct{}
+
+func GetService() *service {
+	return &service{}
+}
