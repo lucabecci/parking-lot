@@ -1,1 +1,0 @@
-pkg for all svc
