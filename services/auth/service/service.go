@@ -6,6 +6,7 @@ import (
 	"github.com/lucabecci/parking-lot/pkg"
 	"github.com/lucabecci/parking-lot/pkg/models"
 	"github.com/lucabecci/parking-lot/pkg/repository"
+	"github.com/lucabecci/parking-lot/pkg/security"
 )
 
 type Service interface {
@@ -42,9 +43,13 @@ func (s *service) Login(ctx context.Context, email, password string) (string, er
 	if match == false {
 		return "", pkg.ErrInvalidPassword
 	}
-	return "", nil
+	return "some token", nil
 }
 
-func (s *service) ValidateToken(ctx context.Context, token string) error {
-	return nil
+func (s *service) ValidateToken(ctx context.Context, token string) (string, error) {
+	_, err := security.ParseToken(token)
+	if err != nil {
+		return "", pkg.ErrInvalidToken
+	}
+	return "Valid Token", nil
 }
