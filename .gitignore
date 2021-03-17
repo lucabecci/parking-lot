@@ -1,7 +1,7 @@
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,go,git,vscode
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,go,git,vscode
-
+.env
 ### Git ###
 # Created by git for backups. To disable backups in Git:
 # $ git config --global mergetool.keepBackup false

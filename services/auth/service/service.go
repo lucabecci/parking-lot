@@ -10,24 +10,24 @@ import (
 )
 
 type Service interface {
-	Login(ctx context.Context, email, password string) (string, error)
+	// Login(ctx context.Context, email, password string) (string, error)
 	Register(ctx context.Context, email, password, confirmPassword string) (models.User, error)
-	ValidateToken(ctx context.Context, token string) error
+	// ValidateToken(ctx context.Context, token string) error
 }
 
 type service struct {
-	respository repository.UserRepository
+	repository repository.UserRepository
 }
 
-func GetService() *service {
-	return &service{}
+func GetService(repository repository.UserRepository) *service {
+	return &service{repository: repository}
 }
 
 func (s *service) Register(ctx context.Context, email, password, confirmPassword string) (models.User, error) {
 	if password != confirmPassword {
 		return models.User{}, pkg.ErrPasswordNotEqual
 	}
-	usr, err := s.respository.Create(email, password)
+	usr, err := s.repository.Create(email, password)
 	if err != nil {
 		return models.User{}, pkg.ErrToCreate
 	}
@@ -35,7 +35,7 @@ func (s *service) Register(ctx context.Context, email, password, confirmPassword
 }
 
 func (s *service) Login(ctx context.Context, email, password string) (string, error) {
-	user, err := s.respository.GetByEmail(email)
+	user, err := s.repository.GetByEmail(email)
 	if err != nil {
 		return "", err
 	}

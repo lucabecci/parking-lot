@@ -27,7 +27,7 @@ func NewHTTPServer(svc service.Service, logger log.Logger) *mux.Router {
 	)
 
 	r := mux.NewRouter()
-	r.Methods("POST").Path("/auth").Handler(registerHandler)
+	r.Methods("POST").Path("/register").Handler(registerHandler)
 	return r
 }
 

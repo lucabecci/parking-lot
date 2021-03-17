@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository struct {
-	database *gorm.DB
+	Database *gorm.DB
 }
 
 func (ur *UserRepository) Create(email, password string) (models.User, error) {
@@ -17,7 +17,7 @@ func (ur *UserRepository) Create(email, password string) (models.User, error) {
 	}
 
 	user.HashPassword()
-	result := ur.database.Create(&user)
+	result := ur.Database.Create(&user)
 
 	if result.RowsAffected < 1 {
 		return models.User{}, pkg.ErrToCreate
@@ -30,7 +30,7 @@ func (ur *UserRepository) Create(email, password string) (models.User, error) {
 
 func (ur *UserRepository) GetByEmail(email string) (models.User, error) {
 	var usr models.User
-	result := ur.database.Where("email = ?", email).Find(&usr)
+	result := ur.Database.Where("email = ?", email).Find(&usr)
 	if result.RowsAffected < 1 {
 		return models.User{}, pkg.ErrEmailNotExists
 	}
@@ -39,7 +39,7 @@ func (ur *UserRepository) GetByEmail(email string) (models.User, error) {
 
 func (ur *UserRepository) GetByID(id uint) (models.User, error) {
 	var usr models.User
-	result := ur.database.Where("id = ?", id).Find(&usr)
+	result := ur.Database.Where("id = ?", id).Find(&usr)
 	if result.RowsAffected < 1 {
 		return models.User{}, pkg.ErrEmailNotExists
 	}
