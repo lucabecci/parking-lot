@@ -1,6 +1,7 @@
 package security
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -27,4 +28,36 @@ func NewToken(id uint) (string, error) {
 		return "", pkg.ErrToCreateToken
 	}
 	return sToken, nil
+}
+
+func ParseToken(tokenString string) (*jwt.Token, error) {
+	var token *jwt.Token
+	var err error
+
+	token, err = parseHS256(tokenString, token)
+	if err != nil && err.Error() != "Token is expired" {
+		token, err = parseHS256(tokenString, token)
+	}
+	return token, err
+}
+
+func parseHS256(tokenString string, token *jwt.Token) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(JWT_SECRET), nil
+	})
+	return token, err
+}
+
+func GetClaims(token *jwt.Token) (jwt.MapClaims, error) {
+	if !token.Valid {
+		return nil, fmt.Errorf("Unauthorized")
+	}
+	err := token.Claims.(jwt.MapClaims).Valid()
+	if err != nil {
+		return nil, err
+	}
+	return token.Claims.(jwt.MapClaims), nil
 }
