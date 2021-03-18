@@ -12,7 +12,7 @@ import (
 type Service interface {
 	Login(ctx context.Context, email, password string) (string, error)
 	Register(ctx context.Context, email, password, confirmPassword string) (models.User, error)
-	// ValidateToken(ctx context.Context, token string) error
+	ValidateToken(ctx context.Context, token string) (string, error)
 }
 
 type service struct {
@@ -43,13 +43,21 @@ func (s *service) Login(ctx context.Context, email, password string) (string, er
 	if match == false {
 		return "", pkg.ErrInvalidPassword
 	}
-	return "some token", nil
+	token, err := security.NewToken(user.ID)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }
 
 func (s *service) ValidateToken(ctx context.Context, token string) (string, error) {
-	_, err := security.ParseToken(token)
+	t, err := security.ParseToken(token)
 	if err != nil {
 		return "", pkg.ErrInvalidToken
 	}
-	return "Valid Token", nil
+	tData, err := security.GetClaims(t)
+	if err != nil {
+		return "", pkg.ErrInvalidToken
+	}
+	return tData["id"].(string), nil
 }

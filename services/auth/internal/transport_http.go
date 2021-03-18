@@ -33,7 +33,15 @@ func NewHTTPServer(svc service.Service, logger log.Logger) *mux.Router {
 		options...,
 	)
 
+	validateTokenHandler := httptransport.NewServer(
+		MakeValidateTokenEndpoint(svc),
+		decodeValidateTokenRequest,
+		pkg.EncodeResponse,
+		options...,
+	)
+
 	r := mux.NewRouter()
+	r.Methods("POST").Path("/validate-token").Handler(validateTokenHandler)
 	r.Methods("POST").Path("/login").Handler(loginHandler)
 	r.Methods("POST").Path("/register").Handler(registerHandler)
 	return r
@@ -71,6 +79,14 @@ func decodeRegisterRequest(ctx context.Context, r *http.Request) (interface{}, e
 
 func decodeLoginRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	var request LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
+}
+
+func decodeValidateTokenRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var request ValidateTokenRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}

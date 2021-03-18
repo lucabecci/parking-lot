@@ -29,6 +29,15 @@ type LoginResponse struct {
 	Err   string `json:"error,omitempty"`
 }
 
+type ValidateTokenRequest struct {
+	Token string `json:"token"`
+}
+
+type ValidateTokenResponse struct {
+	ID  string `json:"id,omitempty"`
+	Err string `json:"error,omitempty"`
+}
+
 func MakeRegisterEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(RegisterRequest)
@@ -48,5 +57,16 @@ func MakeLoginEndpoint(svc service.Service) endpoint.Endpoint {
 			return LoginResponse{"", err.Error()}, err
 		}
 		return LoginResponse{token, ""}, nil
+	}
+}
+
+func MakeValidateTokenEndpoint(svc service.Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(ValidateTokenRequest)
+		id, err := svc.ValidateToken(ctx, req.Token)
+		if err != nil {
+			return ValidateTokenResponse{"", err.Error()}, err
+		}
+		return ValidateTokenResponse{id, ""}, nil
 	}
 }

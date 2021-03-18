@@ -45,3 +45,17 @@ func (mw logMW) Login(ctx context.Context, email, password string) (token string
 	token, err = mw.Service.Login(ctx, email, password)
 	return
 }
+
+func (mw logMW) ValidateToken(ctx context.Context, token string) (id string, err error) {
+	defer func(begin time.Time) {
+		_ = mw.logger.Log(
+			"method", "login",
+			"input", token,
+			"err", err,
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+
+	id, err = mw.Service.ValidateToken(ctx, token)
+	return
+}
