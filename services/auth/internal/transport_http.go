@@ -26,7 +26,15 @@ func NewHTTPServer(svc service.Service, logger log.Logger) *mux.Router {
 		options...,
 	)
 
+	loginHandler := httptransport.NewServer(
+		MakeLoginEndpoint(svc),
+		decodeLoginRequest,
+		pkg.EncodeResponse,
+		options...,
+	)
+
 	r := mux.NewRouter()
+	r.Methods("POST").Path("/login").Handler(loginHandler)
 	r.Methods("POST").Path("/register").Handler(registerHandler)
 	return r
 }
@@ -55,6 +63,14 @@ func codeFrom(err error) int {
 
 func decodeRegisterRequest(ctx context.Context, r *http.Request) (interface{}, error) {
 	var request RegisterRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
+}
+
+func decodeLoginRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var request LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 type Service interface {
-	// Login(ctx context.Context, email, password string) (string, error)
+	Login(ctx context.Context, email, password string) (string, error)
 	Register(ctx context.Context, email, password, confirmPassword string) (models.User, error)
 	// ValidateToken(ctx context.Context, token string) error
 }

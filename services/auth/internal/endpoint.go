@@ -19,6 +19,16 @@ type RegisterResponse struct {
 	Err  string      `json:"error,omitempty"`
 }
 
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	Token string `json:"token,omitempty"`
+	Err   string `json:"error,omitempty"`
+}
+
 func MakeRegisterEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(RegisterRequest)
@@ -27,5 +37,16 @@ func MakeRegisterEndpoint(svc service.Service) endpoint.Endpoint {
 			return RegisterResponse{models.User{}, err.Error()}, err
 		}
 		return RegisterResponse{usr, ""}, nil
+	}
+}
+
+func MakeLoginEndpoint(svc service.Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(LoginRequest)
+		token, err := svc.Login(ctx, req.Email, req.Password)
+		if err != nil {
+			return LoginResponse{"", err.Error()}, err
+		}
+		return LoginResponse{token, ""}, nil
 	}
 }
